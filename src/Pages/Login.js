@@ -6,12 +6,12 @@ import {
 } from "react-firebase-hooks/auth";
 
 import { useForm } from "react-hook-form";
-// import auth from "../firebase.init";
+
 import { Link, useNavigate } from "react-router-dom";
+import SocialLogin from "./SocialLogin";
+import auth from "../firebase.init";
 
 const Login = () => {
-  const auth = "";
-  const [signInWithGoogle, GUser, loading, error] = useSignInWithGoogle(auth);
   const [signInWithEmailAndPassword, LUuser, LLoading, LError] =
     useSignInWithEmailAndPassword(auth);
 
@@ -29,24 +29,24 @@ const Login = () => {
     navigate("/");
   }
 
-  const input =
-    "input input-bordered input-accent w-full max-w-xs focus:outline-0";
+  const input = "input input-bordered input-accent w-full focus:outline-0";
 
   const onSubmit = (data) => {
     // event.preventDefault()
     signInWithEmailAndPassword(data.email, data.password);
   };
+  // console.log(LError);
 
   return (
-    <div className="mx-auto my-10 w-96 border-2 shadow-2xl p-10 rounded-lg">
+    <div className="lg:mx-auto my-10 mx-20 px-5 lg:w-6/12 border-2 shadow-2xl lg:px-10 py-5 rounded-lg">
       <div className=" ">
-        <div className="mb-8">
+        <div className="mb-10">
           <h1 className=" text-center font-semibold text-green-600 text-3xl">
-            Please Login
+            Please Login Now
           </h1>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="my-2">
+          <div className="my-5">
             {/*  */}
             <input
               placeholder="Please Input Email"
@@ -63,7 +63,7 @@ const Login = () => {
           </div>
 
           {/*  */}
-          <div className="my-2">
+          <div className="my-5">
             <input
               placeholder="Please Input password"
               type="password"
@@ -78,6 +78,20 @@ const Login = () => {
               )}
             </p>
           </div>
+
+          {/*  */}
+          {LError ==
+            "FirebaseError: Firebase: Error (auth/wrong-password)." && (
+            <p className=" text-center font-medium ml-5 text-red-500">
+              Wrong password, Please input correct password.
+            </p>
+          )}
+          {LError ==
+            "FirebaseError: Firebase: Error (auth/user-not-found)." && (
+            <p className=" text-center font-medium ml-5 text-red-500">
+              User Not Found, Please input correct Email.
+            </p>
+          )}
 
           <input
             className=" text-xl btn btn-primary my-3 w-full"
@@ -96,19 +110,8 @@ const Login = () => {
 
       <div className="divider">OR</div>
 
-      <div className=" grid grid-cols-3 justify-around text-center mt-5 text-3xl ">
-        <div className=" text-center">
-          <button onClick={() => signInWithGoogle()}>
-            <i className="fa-brands fa-google-plus-g text-center text-red-600"></i>
-          </button>
-        </div>
-        <div className=" text-center">
-          <i className="fa-brands fa-facebook text-center text-blue-500"></i>
-        </div>
-        <div className=" text-center">
-          <i className="fa-brands fa-github text-center"></i>
-        </div>
-        <div>{/* <i className="fa-brands fa-linkedin-in"></i> */}</div>
+      <div className=" text-center mt-5 text-3xl ">
+        <SocialLogin />
       </div>
     </div>
   );

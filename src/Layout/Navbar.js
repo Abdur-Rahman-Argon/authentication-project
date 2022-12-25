@@ -1,10 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import auth from "../firebase.init";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { signOut } from "firebase/auth";
 
 const Navbar = () => {
-  //   const [user, loading, error] = useAuthState(auth);
+  const [user, loading, error] = useAuthState(auth);
 
-  // console.log(user);
+  console.log(user);
 
   const navMenu = (
     <>
@@ -16,21 +19,20 @@ const Navbar = () => {
         <Link to="/contact-us">Contact Us</Link>
       </li>
 
-      <li tabIndex={0} className="">
-        {/* {user ? (
+      <li tabIndex={0} className=" ">
+        {user ? (
           <>
-            <div className="p-0">
+            <div className="p-0 ">
               <img
                 src={
                   user.photoURL ||
                   "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                 }
                 alt=""
-                className=" w-12 mx-2 rounded-full border-4 border-green-300"
+                className="   w-12 mx-2 rounded-full border-4 border-green-300"
               />
             </div>
 
-             profile dropdown 
             <ul className="p-2 bg-slate-700 menu menu-compact dropdown-content gap-2 mt-12 -left-3 lg:-left-5 lg:mt-0">
               {user.displayName && (
                 <li className="">
@@ -43,8 +45,7 @@ const Navbar = () => {
                   My Profile Info
                 </Link>
               </li>
-             
-              
+
               <li>
                 <Link to="">Settings</Link>
               </li>
@@ -54,8 +55,8 @@ const Navbar = () => {
             </ul>
           </>
         ) : (
-        )}*/}
-        <Link to="login"> Login </Link>
+          <Link to="login"> Login </Link>
+        )}
       </li>
     </>
   );

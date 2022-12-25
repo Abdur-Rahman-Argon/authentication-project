@@ -5,12 +5,13 @@ import github from "../images/github.png";
 import twitter from "../images/twitter.png";
 import { useAuthState, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import { useLocation, useNavigate } from "react-router-dom";
+import auth from "../firebase.init";
 // import Loading from "../Shared/Loading";
 // import auth from "../../../firebase.init";
 
 const SocialLogin = () => {
-  const [signInWithGoogle, gUser, GLoading, error] = useSignInWithGoogle();
-  const [user, loading] = useAuthState();
+  const [signInWithGoogle, gUser, GLoading, error] = useSignInWithGoogle(auth);
+  const [user, loading] = useAuthState(auth);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,15 +31,16 @@ const SocialLogin = () => {
         <img src={google} alt="" className=" w-8" />{" "}
       </button>
 
-      <button onClick={""} className=" ">
+      <button className=" ">
+        {/* <button onClick={""} className=" "> */}
         <img src={facebook} alt="" className=" w-8" />{" "}
       </button>
 
-      <button onClick={""} className=" ">
+      <button className=" ">
         <img src={twitter} alt="" className=" w-8" />{" "}
       </button>
 
-      <button onClick={""} className=" ">
+      <button className=" ">
         <img src={github} alt="" className=" w-8" />{" "}
       </button>
     </div>
