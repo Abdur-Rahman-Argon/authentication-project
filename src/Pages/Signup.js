@@ -7,6 +7,7 @@ import {
 
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import SocialLogin from "./SocialLogin";
 
 const Signup = () => {
   const [imgUrl, setImgUrl] = useState(
@@ -168,18 +169,7 @@ const Signup = () => {
       <div className="divider">OR</div>
 
       <div className=" grid grid-cols-3 justify-around text-center mt-5 text-3xl ">
-        <div className=" text-center">
-          <button onClick={() => signInWithGoogle()}>
-            <i className="fa-brands fa-google-plus-g text-center text-red-600"></i>
-          </button>
-        </div>
-        <div className=" text-center">
-          <i className="fa-brands fa-facebook text-center text-blue-500"></i>
-        </div>
-        <div className=" text-center">
-          <i className="fa-brands fa-github text-center"></i>
-        </div>
-        <div>{/* <i className="fa-brands fa-linkedin-in"></i> */}</div>
+        <SocialLogin />
       </div>
     </div>
   );

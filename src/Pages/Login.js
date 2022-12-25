@@ -6,10 +6,11 @@ import {
 } from "react-firebase-hooks/auth";
 
 import { useForm } from "react-hook-form";
-import auth from "../firebase.init";
+// import auth from "../firebase.init";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const auth = "";
   const [signInWithGoogle, GUser, loading, error] = useSignInWithGoogle(auth);
   const [signInWithEmailAndPassword, LUuser, LLoading, LError] =
     useSignInWithEmailAndPassword(auth);
