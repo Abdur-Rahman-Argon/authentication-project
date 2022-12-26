@@ -21,10 +21,8 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const navigate = useNavigate();
-
   const [user] = useAuthState(auth);
-
+  const navigate = useNavigate();
   if (user) {
     navigate("/");
   }

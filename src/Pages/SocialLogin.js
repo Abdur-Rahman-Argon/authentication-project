@@ -24,10 +24,35 @@ const SocialLogin = () => {
   // if (loading) {
   //   return <Loading></Loading>;
   // }
+  console.log("user", gUser);
+
+  const googleGogIn = async () => {
+    await signInWithGoogle();
+    // console.log("user", user);
+    // const displayName = await user.displayName;
+    // const email = await user.email;
+    // const phoneNumber = await user.phoneNumber;
+    // const upUser = {
+    //   displayName,
+    //   email,
+    //   phoneNumber,
+    // };
+    // await fetch(`https://authintic-server.onrender.com/users/${user.email}`, {
+    //   method: "PUT",
+    //   headers: {
+    //     "content-type": "application/json",
+    //   },
+    //   body: JSON.stringify(upUser),
+    // })
+    //   .then((res) => res.json())
+    //   .then((result) => {
+    //     console.log(result);
+    //   });
+  };
 
   return (
     <div className=" text-center flex items-center justify-around my-8">
-      <button onClick={() => signInWithGoogle()}>
+      <button onClick={googleGogIn}>
         <img src={google} alt="" className=" w-8" />{" "}
       </button>
 

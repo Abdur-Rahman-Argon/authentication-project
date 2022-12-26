@@ -1,32 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  useAuthState,
   useCreateUserWithEmailAndPassword,
   useSignInWithGoogle,
   useUpdateProfile,
 } from "react-firebase-hooks/auth";
 
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import SocialLogin from "./SocialLogin";
+import { Link, useNavigate } from "react-router-dom";
 import auth from "../firebase.init";
+import useInfo from "./useInfo";
 
-const Signup = () => {
-  const [imgUrl, setImgUrl] = useState(
-    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-  );
+const UpdateProfile = () => {
+  const [user, loading, error] = useAuthState(auth);
+  const [userData] = useInfo();
+  console.log("update", userData);
+
+  const [imgUrl, setImgUrl] = useState(user?.photoURL);
   const [fromData, setFromData] = useState();
-  const [passError, setPassError] = useState();
-
-  const [createUserWithEmailAndPassword, CUser, cLoading, cError] =
-    useCreateUserWithEmailAndPassword(auth);
-
   const [updateProfile, updating] = useUpdateProfile(auth);
 
+  const name = userData?.displayName;
+
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      displayName: name,
+      phoneNumber: userData?.phoneNumber,
+      gender: userData?.gender,
+      dateOfBirth: userData?.dateOfBirth,
+    },
+  });
+
+  const navigate = useNavigate();
 
   const imageStorageKey = "e9638798533213a9040c701a88ef9635";
 
@@ -44,18 +54,16 @@ const Signup = () => {
   const input = "input input-bordered input-accent w-full focus:outline-0";
 
   const onSubmit = async (data) => {
-    // event.preventDefault()
     const user = {
       displayName: data.displayName,
-      email: data.email,
       phoneNumber: data.phoneNumber,
       gender: data.gender,
       dateOfBirth: data.dateOfBirth,
     };
 
-    if (data.password === data.confirm) {
-      await createUserWithEmailAndPassword(data.email, data.password);
+    if (fromData) {
       const url = `https://api.imgbb.com/1/upload?key=${imageStorageKey}`;
+
       await fetch(url, {
         method: "POST",
         body: fromData,
@@ -72,38 +80,39 @@ const Signup = () => {
               gender: data.gender,
               dateOfBirth: data.dateOfBirth,
             });
-          } else {
-            updateProfile({
-              displayName: data.displayName,
-              phoneNumber: data.phoneNumber,
-              gender: data.gender,
-              dateOfBirth: data.dateOfBirth,
-            });
           }
         });
-      await fetch(`https://authintic-server.onrender.com/users/${data.email}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(user),
-      })
+    } else {
+      updateProfile({
+        displayName: data.displayName,
+        phoneNumber: data.phoneNumber,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth,
+      });
+      await fetch(
+        `https://authintic-server.onrender.com/users/${user?.email}`,
+        {
+          method: "PUT",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(user),
+        }
+      )
         .then((res) => res.json())
         .then((result) => {
           console.log(result);
+          navigate("/");
         });
-    } else {
-      setPassError("Password & Confirm Password Is no matched");
     }
   };
 
-  // console.log(cError);
   return (
     <div className="lg:mx-auto my-10 mx-20 px-5 lg:w-6/12 border-2 shadow-2xl lg:px-10 py-5 rounded-lg">
       <div className=" ">
         <div className="mb-10">
           <h1 className=" text-center font-semibold text-green-600 text-3xl">
-            Please SignUp
+            Please UpdateProfile {userData?.displayName}
           </h1>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -123,7 +132,6 @@ const Signup = () => {
                   type="file"
                   onChange={onImageChange}
                   className="absolute w-full lg:scale-150 opacity-0"
-                  required
                 />
               </div>
             </div>
@@ -160,15 +168,10 @@ const Signup = () => {
             <input
               placeholder="Please Input Email"
               type="email"
-              className={`${input}  ${errors.email && " border-red-500"}`}
-              {...register("email", { required: true })}
+              value={user?.email}
+              disabled
+              className={`${input}  ${" border-red-500"}`}
             />
-            <p>
-              {" "}
-              {errors.email && (
-                <span className=" ml-5 text-red-500">Email is required</span>
-              )}
-            </p>
           </div>
 
           <div className="my-2">
@@ -179,19 +182,16 @@ const Signup = () => {
               </span>
             </label>
             <input
-              placeholder="+880-1700000000"
+              placeholder="Please Input phoneNumber"
               type="text"
               className={`${input}  ${errors.phoneNumber && " border-red-500"}`}
-              {...register("phoneNumber", {
-                required: true,
-                pattern: /^[+880]+-+[0-9]/,
-              })}
+              {...register("phoneNumber", { required: true })}
             />
             <p>
               {" "}
               {errors.phoneNumber && (
                 <span className=" ml-5 text-red-500">
-                  Phone Number is not Correct Format
+                  Phone Number is required
                 </span>
               )}
             </p>
@@ -205,19 +205,16 @@ const Signup = () => {
               </span>
             </label>
             <input
-              placeholder="12-12-2023"
+              placeholder="12/12/2023"
               type="text"
               className={`${input}  ${errors.dateOfBirth && " border-red-500"}`}
-              {...register("dateOfBirth", {
-                required: true,
-                pattern: /^[0-9]+-+[0-9]+-+[0-9]/,
-              })}
+              {...register("dateOfBirth", { required: true })}
             />
             <p>
               {" "}
               {errors.dateOfBirth && (
                 <span className=" ml-5 text-red-500">
-                  dateOfBirth is not Correct Format
+                  dateOfBirth is required
                 </span>
               )}
             </p>
@@ -290,61 +287,7 @@ const Signup = () => {
             </p>
           </div>
 
-          {/*  */}
-          <div className="my-2">
-            <label htmlFor="email" className="label ">
-              <span className="label-text text-base font-semibold text-slate-600">
-                Password
-              </span>
-            </label>
-            <input
-              placeholder="Please Input password"
-              type="password"
-              className={`${input} ${errors.password && " border-red-500"}`}
-              {...register("password", { required: true, min: 6 })}
-            />
-            {/*  */}
-            <p>
-              {" "}
-              {errors.password && (
-                <span className=" ml-5 text-red-500">Password is required</span>
-              )}
-            </p>
-          </div>
-
-          {/*  */}
-          <div className="my-2">
-            <label htmlFor="email" className="label ">
-              <span className="label-text text-base font-semibold text-slate-600">
-                Confirm Password
-              </span>
-            </label>
-            <input
-              placeholder="Please Confirm password"
-              type="password"
-              className={`${input} ${errors.confirm && " border-red-500"}`}
-              {...register("confirm", { required: true, min: 8 })}
-            />
-            {/*  */}
-            <p>
-              {" "}
-              {errors.confirm && (
-                <span className=" ml-5 text-red-500">
-                  confirm Password is required
-                </span>
-              )}
-            </p>
-          </div>
-          {/*  */}
-
-          {passError ? (
-            <p className=" text-center font-medium ml-5 text-red-500">
-              {passError}
-            </p>
-          ) : (
-            <></>
-          )}
-          {cError ==
+          {/* {cError ==
             "FirebaseError: Firebase: Error (auth/email-already-in-use)." && (
             <p className=" text-center font-medium ml-5 text-red-500">
               Already Have a Account.
@@ -355,11 +298,11 @@ const Signup = () => {
             <p className=" text-center font-medium ml-5 text-red-500">
               User Not Found, Please input correct Email.
             </p>
-          )}
+          )} */}
 
           <input
             className=" text-xl btn btn-primary my-3 w-full"
-            value={"SignUp"}
+            value={"UpdateProfile"}
             type="submit"
           />
         </form>
@@ -371,14 +314,8 @@ const Signup = () => {
           Login
         </Link>
       </p>
-
-      <div className="divider">OR</div>
-
-      <div className=" text-center mt-5 text-3xl ">
-        <SocialLogin />
-      </div>
     </div>
   );
 };
 
-export default Signup;
+export default UpdateProfile;
